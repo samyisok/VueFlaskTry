@@ -116,15 +116,19 @@ export default {
   },
   methods: {
     getData () {
+      console.log('wow', this.$auth.getToken())
       var app = this
       app.loadingState = true
+      console.log('starthere')
       axios.defaults.headers.common['x-access-token'] = app.$auth.getToken()
+      console.log(axios.defaults.headers.common['x-access-token'])
       axios.post(
       app.$store.state.api + 'messages',
         {
           data: { 'page': app.page }
         }
       ).then((response) => {
+        console.log(response)
         if (response.data.status === 'success') {
           app.alert = response
           console.log(response.data.payload)
@@ -151,6 +155,24 @@ export default {
       this.msgDialogTitle = this.items[index].title
       this.msgDialogSender = this.items[index].sender
       this.msgDialogDate = this.items[index].date
+
+      let messageId = this.items[index].id
+      let statusMsg = this.items[index].status
+
+      let app = this
+      axios.defaults.headers.common['x-access-token'] = app.$auth.getToken()
+      axios.post(
+      app.$store.state.api + 'make_read_message',
+        {
+          data: { 'message_id': messageId }
+        }
+      ).then(response => {
+        if (response.data.status === 'success') {
+            app.$emit('updateCountMsg')
+            console.log('updateCountMsg1')
+          }
+      }).catch(e => console.log(e)
+      )
     }
   }
 }

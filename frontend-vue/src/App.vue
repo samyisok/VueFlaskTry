@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app @updateCountMsg="anus()" >
     <v-navigation-drawer
       value="False"
       v-model="drawer"
@@ -31,9 +31,9 @@
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-if="isLogin" flat icon large to='/messages'>
+      <v-btn v-if="isLogin" flat icon large to='/messages' >
        <v-badge overlay left color="red" overlap>
-         <span slot="badge" v-if='newMsgCount > 0'>{{newMsgCount}}</span>
+         <span slot="badge" v-if='newMsgCount > 0' >{{newMsgCount}}</span>
          <v-icon large>email</v-icon>
        </v-badge>
       </v-btn>
@@ -116,6 +116,9 @@ export default {
         app.error = error
         app.errorMessage = 'Неизвестная ошибка'
       })
+    },
+    anus () {
+      console.log('Anus')
     }
   },
   name: 'App',

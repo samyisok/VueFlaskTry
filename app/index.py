@@ -101,21 +101,42 @@ def test(current_user):
 @token_required
 def new_messages_count(current_user):
     new_msg = Message.query.filter_by(user_id=current_user.id, status=1).count()
+    print(new_msg)
     return jsonify({'status': 'success', 'result': 'wow so many text', 'payload': new_msg})
+
+
+@app.route('/make_read_message', methods=['POST'])
+@token_required
+def make_read_message(current_user):
+    cur_user = User.query.filter_by(email=current_user.email).first()
+    data = request.data
+    info = json.loads(data)
+    if 'message_id' in info['data']:
+        message_id = info['data']['message_id']
+    else:
+        return
+    msg = Message.query.filter_by(user_id=cur_user.id, id=message_id).first()
+    msg.status = 0
+    db.session.commit()
+    return jsonify({'status': 'success', 'result': [msg.status, cur_user.id, cur_user.email, message_id]})
 
 
 @app.route('/messages', methods=['POST'])
 @token_required
 def messages(current_user):
+    print('1')
     cur_user = User.query.filter_by(email=current_user.email).first()
+    print('2')
     data = request.data
     info = json.loads(data)
     page = 1
     if 'page' in info['data']:
         page = info['data']['page']
+    print('4')
     on_page = 10
     var = []
     msg_pagination = Message.query.filter_by(user_id=cur_user.id).paginate(page, on_page, False)
+    print('6')
     for msg in msg_pagination.items:
         var1 = {'message': msg.msg_template.msg,
                 'sender': msg.msg_template.sender,
@@ -125,6 +146,7 @@ def messages(current_user):
                 'status': msg.status}
         var.append(var1)
     print(var)
+    print('7')
     all_pages = msg_pagination.pages
     return jsonify({'status': 'success', 'result': 'wow so many text', 'payload': var, 'pages': all_pages})
 
@@ -180,7 +202,7 @@ def reg():
     db.session.add(new_message)
     db.session.commit()
 
-    for i in range(1,400):
+    for i in range(1,23):
         msg = 'TestMsg#'+str(i)
         sender = 'Sender#'+str(i)
         header = 'Header#'+str(i)
